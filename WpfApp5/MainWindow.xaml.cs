@@ -28,10 +28,17 @@ namespace WpfApp5
         {
             InitializeComponent();
             //GetAllCaller();
-            var player = GetById(1);
-            player.Score = 50;
-            player.Name = "New Gamer";
-            Update(player);
+            //var player = GetById(1);
+            //player.Score = 50;
+            //player.Name = "New Gamer";
+            //Update(player);
+            //Insert(new Player
+            //{
+            //    Name = "John",
+            //    Score = 88,
+            //    IsStar = false,
+            //});
+            //Delete(5);
             GetAllCaller();
             //MyDataGrid.ItemsSource = new List<Player> { player };
         }
@@ -63,6 +70,28 @@ namespace WpfApp5
                 var player = connection
                     .QueryFirstOrDefault<Player>("SELECT * FROM Players WHERE Id = @PId", new { PId = id });
                 return player;
+            }
+        }
+
+        public void Delete(int id)
+        {
+            var conn = ConfigurationManager.ConnectionStrings["MyConn"].ConnectionString;
+            using (var connection = new SqlConnection(conn))
+            {
+                connection.Execute(@"DELETE FROM Players WHERE Id = @PId", new { PId = id });
+            }
+        }
+
+        public void Insert(Player player)
+        {
+            var conn = ConfigurationManager.ConnectionStrings["MyConn"].ConnectionString;
+            using (var connection = new SqlConnection(conn))
+            {
+                connection.Execute(@"
+            INSERT INTO Players(Name,Score,IsStar)
+            VALUES(@PName,@PScore,@PIsStar)
+            ", new { PName = player.Name, PScore = player.Score, PIsStar = player.IsStar, PId = player.Id });
+                MessageBox.Show("Player Added Successfully");
             }
         }
 
